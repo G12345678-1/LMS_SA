@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
       setDefaults(tf.value);
       tf.addEventListener('change', e => setDefaults(e.target.value));
     }
-  } catch(e) { console.warn('Time defaults not applied', e); }
+  } catch(e) {}
 });
 
 async function apiLogin(e) {
@@ -41,7 +41,7 @@ async function apiLogin(e) {
     alert('Login successful');
     loadCurrentUser();
     loadLeaves();
-  } catch(e) { alert('Error: ' + (e.name === 'AbortError' ? 'Request timeout' : e.message)); console.error('Login error:', e); }
+  } catch(e) { alert('Error: ' + (e.name === 'AbortError' ? 'Request timeout' : e.message)); }
 }
 
 async function apiRegister(e) {
@@ -53,13 +53,13 @@ async function apiRegister(e) {
     const r = await fetch(`${API_BASE}/auth/register`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({name: f.name.value, username: f.username.value, email: f.email.value, department: f.department.value, role: f.role.value, password: f.password.value}), signal: controller.signal});
     clearTimeout(timeout);
     const j = await r.json();
-    if(!r.ok) { alert('Register failed: ' + (j.error || j.message || 'Unknown error')); return; }
+    if(!r.ok) { alert('Register failed: ' + (j.error || 'Unknown error')); return; }
     saveToken(j.token);
     alert('Registered successfully');
     f.reset();
     loadCurrentUser();
     loadLeaves();
-  } catch(e) { alert('Error: ' + (e.name === 'AbortError' ? 'Request timeout' : e.message)); console.error(e); }
+  } catch(e) { alert('Error: ' + (e.name === 'AbortError' ? 'Request timeout' : e.message)); }
 }
 
 async function apiSubmitLeave(e) {
@@ -69,10 +69,10 @@ async function apiSubmitLeave(e) {
   try {
     const r = await fetch(`${API_BASE}/leaves`, {method:'POST', headers:{'Authorization':'Bearer '+t}, body: new FormData(e.target)});
     const j = await r.json();
-    if(!r.ok) { alert('Failed: ' + (j.error || j.message || 'Unknown error')); return; }
+    if(!r.ok) { alert('Failed: ' + (j.error || 'Unknown error')); return; }
     alert('Leave submitted');
     loadLeaves();
-  } catch(e) { alert('Error: ' + (e.name === 'AbortError' ? 'Request timeout' : e.message)); console.error('Leave submission error:', e); }
+  } catch(e) { alert('Error: ' + (e.name === 'AbortError' ? 'Request timeout' : e.message)); }
 }
 
 const sampleLeaves = [{name:'Alice', type:'Annual', start_date:'2025-12-02', end_date:'2025-12-04', status:'Approved'}, {name:'Bob', type:'Medical', start_date:'2025-11-30', end_date:'2025-11-30', status:'Pending'}];

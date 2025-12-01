@@ -8,6 +8,7 @@ export default {
     const route = (m, p) => method === m && path === p;
 
     try {
+      
       if (route('POST', '/api/auth/register')) {
         const body = await req.json();
         const { name = '', username, email, department = '', role = 'Employee', password } = body || {};
@@ -60,18 +61,19 @@ export default {
         return json({ message: 'Password reset successful' });
       }
 
-      // Authenticated routes
-      const auth = await requireAuth(req, env);
-      if (!auth.ok) return json({ error: auth.error }, auth.status);
-      const user = auth.user;
-
       if (route('GET', '/api/auth/me')) {
+        const auth = await requireAuth(req, env);
+        if (!auth.ok) return json({ error: auth.error }, auth.status);
+        const user = auth.user;
         const row = await env.DB.prepare('SELECT id,name,username,email,department,role,allocation,used FROM users WHERE id = ?').bind(user.id).first();
         if (!row) return json({ error: 'User not found' }, 404);
         return json(row);
       }
 
       if (route('POST', '/api/leaves')) {
+        const auth = await requireAuth(req, env);
+        if (!auth.ok) return json({ error: auth.error }, auth.status);
+        const user = auth.user;
         const contentType = req.headers.get('content-type') || '';
         let payload = {};
         let attachmentName = null;
@@ -122,6 +124,9 @@ export default {
       }
 
       if (route('GET', '/api/leaves')) {
+        const auth = await requireAuth(req, env);
+        if (!auth.ok) return json({ error: auth.error }, auth.status);
+        const user = auth.user;
         const status = url.searchParams.get('status');
         const year = url.searchParams.get('year');
         let q = 'SELECT l.*, u.name, u.role FROM leaves l JOIN users u ON l.user_id = u.id';
@@ -137,6 +142,9 @@ export default {
       }
 
       if (path.startsWith('/api/leaves/') && method === 'POST' && path.endsWith('/approve')) {
+        const auth = await requireAuth(req, env);
+        if (!auth.ok) return json({ error: auth.error }, auth.status);
+        const user = auth.user;
         if (!(user.role === 'Manager' || user.role === 'Admin')) return json({ error: 'Manager role required' }, 403);
         const id = path.split('/')[3];
         const body = await req.json();
@@ -153,6 +161,9 @@ export default {
       }
 
       if (route('GET', '/api/export/raw')) {
+        const auth = await requireAuth(req, env);
+        if (!auth.ok) return json({ error: auth.error }, auth.status);
+        const user = auth.user;
         if (!(user.role === 'Manager' || user.role === 'Admin')) return json({ error: 'Manager role required' }, 403);
         const year = url.searchParams.get('year') || new Date().getFullYear().toString();
         const q = 'SELECT u.name as employee, u.role, l.type, l.start_date, l.end_date, l.start_time, l.end_time, l.duration_days, l.duration_hours, l.status, l.applied_at, l.actioned_at FROM leaves l JOIN users u ON l.user_id = u.id WHERE substr(l.start_date,1,4) = ? OR substr(l.end_date,1,4) = ? ORDER BY l.start_date';
@@ -174,6 +185,9 @@ export default {
       }
 
       if (route('GET', '/api/export/summary')) {
+        const auth = await requireAuth(req, env);
+        if (!auth.ok) return json({ error: auth.error }, auth.status);
+        const user = auth.user;
         if (!(user.role === 'Manager' || user.role === 'Admin')) return json({ error: 'Manager role required' }, 403);
         const year = url.searchParams.get('year') || new Date().getFullYear().toString();
         const r = await env.DB.prepare('SELECT id, name, role, allocation, used FROM users ORDER BY name').all();
