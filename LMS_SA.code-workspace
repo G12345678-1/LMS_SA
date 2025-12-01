@@ -1,0 +1,35 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "[javascript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/.git": true
+    }
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Launch Backend",
+        "type": "node",
+        "request": "launch",
+        "program": "${workspaceFolder}/server.js",
+        "restart": true,
+        "console": "integratedTerminal",
+        "env": {
+          "NODE_ENV": "development",
+          "PORT": "4000"
+        }
+      }
+    ]
+  }
+}

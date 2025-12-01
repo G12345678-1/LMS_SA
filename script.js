@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:4000/api';
+const API_BASE = (typeof location !== 'undefined') ? (location.origin + '/api') : 'http://localhost:4000/api';
 const saveToken = t => localStorage.setItem('lms_token', t);
 const getToken = () => localStorage.getItem('lms_token');
 const clearToken = () => localStorage.removeItem('lms_token');
