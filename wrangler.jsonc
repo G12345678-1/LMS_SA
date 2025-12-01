@@ -1,7 +1,16 @@
 {
-  "name": "lmssa",
+  "name": "lms-sa",
   "compatibility_date": "2025-12-01",
+  "main": "worker.js",
   "assets": {
-    "directory": "."
-  }
+    "directory": "./public"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "lms_sa",
+      "database_id": "0c45f2f2-7036-4cfd-9d72-45331f86ea5c",
+      "migrations_dir": "migrations"
+    }
+  ]
 }
