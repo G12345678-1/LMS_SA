@@ -9,7 +9,7 @@
 <body>
   <header class="site-header">
     <div class="container">
-      <h1 class="brand">Leave Management</h1>
+      <h1 class="brand"><img src="logo.png" alt="Logo" class="brand-logo"></h1>
       <div id="userArea"></div>
       <button id="menuToggle" class="menu-toggle">☰</button>
       <nav id="mainNav" class="main-nav">
@@ -37,7 +37,12 @@
           <input type="text" name="username" placeholder="Username" required>
           <input type="email" name="email" placeholder="Email" required>
           <input type="text" name="department" placeholder="Department" required>
-          <select name="role" required><option>Employee</option><option>Manager</option></select>
+          <label>Role
+            <select name="role" id="role" required>
+              <option value="Employee" selected>Employee</option>
+              <option value="Manager">Manager</option>
+            </select>
+          </label>
           <input type="password" name="password" placeholder="Password" required>
           <button type="submit">Register</button>
         </form>

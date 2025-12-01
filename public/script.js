@@ -88,7 +88,8 @@ const downloadCSV = (fn, rows) => {
 
 async function apiExportRaw() {
   const y = document.getElementById('exportYear').value, t = getToken();
-  if(!t) { alert('Please login to export data'); return downloadCSV(`raw_${y}.csv`, [['Name','Type','Dates','Status'], ...sampleLeaves.map(l => [l.name,l.type,`${l.start_date}-${l.end_date}`,l.status])]); }
+  if(!t) { alert('Please login to export data'); return; }
+  if(window.currentUser && !(window.currentUser.role === 'Manager' || window.currentUser.role === 'Admin')) { alert('Manager role required'); return; }
   try {
     const r = await fetch(`${API_BASE}/export/raw?year=${y}`, {headers:{'Authorization':'Bearer '+t}});
     if(!r.ok) { const j = await r.json(); alert('Export failed: ' + (j.error || 'Unknown error')); return; }
@@ -102,7 +103,8 @@ async function apiExportRaw() {
 
 async function apiExportSummary() {
   const y = document.getElementById('exportYear').value, t = getToken();
-  if(!t) { alert('Please login to export data'); return downloadCSV(`summary_${y}.csv`, [['Name','Allocation','Used','Remaining'], ...sampleSummary.map(s => [s.name,s.allocation,s.taken,s.remaining])]); }
+  if(!t) { alert('Please login to export data'); return; }
+  if(window.currentUser && !(window.currentUser.role === 'Manager' || window.currentUser.role === 'Admin')) { alert('Manager role required'); return; }
   try {
     const r = await fetch(`${API_BASE}/export/summary?year=${y}`, {headers:{'Authorization':'Bearer '+t}});
     if(!r.ok) { const j = await r.json(); alert('Export failed: ' + (j.error || 'Unknown error')); return; }
@@ -117,7 +119,7 @@ async function apiExportSummary() {
 async function loadCurrentUser() {
   const t = getToken(), u = document.getElementById('userArea');
   if(!u) return;
-  if(!t) { u.innerHTML = '<div class="card">Not signed in</div>'; return; }
+  if(!t) { u.innerHTML = '<div class="card">Not signed in</div>'; const rep = document.getElementById('reporting'); if(rep) rep.style.display = 'none'; return; }
   try {
     const r = await fetch(`${API_BASE}/auth/me`, {headers:{'Authorization':'Bearer '+t}});
     if(!r.ok) { clearToken(); u.innerHTML = '<div class="card">Session expired</div>'; return; }
@@ -127,6 +129,8 @@ async function loadCurrentUser() {
     document.getElementById('logoutBtn').onclick = () => { clearToken(); window.currentUser = null; loadCurrentUser(); loadLeaves(); };
     const pc = document.getElementById('pendingControls');
     if(pc) pc.style.display = (j.role === 'Manager' || j.role === 'Admin') ? 'block' : 'none';
+    const rep = document.getElementById('reporting');
+    if(rep) rep.style.display = (j.role === 'Manager' || j.role === 'Admin') ? 'block' : 'none';
     updatePendingButton();
   } catch(e) {}
 }
@@ -184,4 +188,3 @@ function updatePendingButton(){
   if(!btn) return;
   btn.textContent = window.showPendingOnly ? 'Show All' : 'Show Pending Only';
 }
-

@@ -4,7 +4,8 @@ body{font-family:system-ui,-apple-system,sans-serif;line-height:1.5;background:v
 .container{max-width:1000px;margin:1.2rem auto;padding:0 1rem}
 .site-header{background:var(--card);border-bottom:1px solid #eee}
 .site-header .container{display:flex;align-items:center;gap:1rem;padding:0.75rem 1rem}
-.brand{font-size:1.15rem;margin:0}
+.brand{font-size:1.15rem;margin:0;display:flex;align-items:center;gap:.5rem}
+.brand-logo{height:32px;width:auto;display:inline-block}
 .main-nav{margin-left:auto;display:flex;gap:.6rem}
 .main-nav a{color:var(--accent);text-decoration:none;padding:.4rem .5rem;border-radius:4px}
 .menu-toggle{display:none;background:0;border:0;font-size:1.2rem;cursor:pointer}
