@@ -1,0 +1,26 @@
+:root{--bg:#f7f9fb;--card:#fff;--muted:#666;--accent:#1565c0}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,sans-serif;line-height:1.5;background:var(--bg);color:#111;margin:0}
+.container{max-width:1000px;margin:1.2rem auto;padding:0 1rem}
+.site-header{background:var(--card);border-bottom:1px solid #eee}
+.site-header .container{display:flex;align-items:center;gap:1rem;padding:0.75rem 1rem}
+.brand{font-size:1.15rem;margin:0}
+.main-nav{margin-left:auto;display:flex;gap:.6rem}
+.main-nav a{color:var(--accent);text-decoration:none;padding:.4rem .5rem;border-radius:4px}
+.menu-toggle{display:none;background:0;border:0;font-size:1.2rem;cursor:pointer}
+.card{background:var(--card);padding:1rem;border-radius:8px;border:1px solid #e8eef6;margin-top:1rem}
+table{width:100%;border-collapse:collapse}
+th,td{padding:.6rem;border-bottom:1px solid #f1f5f9;text-align:left}
+button{background:var(--accent);color:#fff;border:0;padding:.5rem .8rem;border-radius:6px;cursor:pointer}
+/* manager action buttons */
+.approve-btn{background:#16a34a}
+.reject-btn{background:#dc2626}
+.btn-secondary{background:#6b7280}
+input,select,textarea{width:100%;padding:.4rem;border:1px solid #dfe7f2;border-radius:6px}
+label{display:block;margin:.5rem 0}
+form{display:flex;flex-direction:column;gap:.4rem}
+footer{text-align:center;color:var(--muted);margin:2rem 0}
+@media(max-width:820px){
+  .main-nav{display:none}
+  .menu-toggle{display:block;margin-left:auto}
+}

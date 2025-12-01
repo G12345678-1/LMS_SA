@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Leave Management System</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preload" href="script.js" as="script">
+  <meta http-equiv="origin-trial" content="">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1 class="brand">Leave Management</h1>
+      <div id="userArea"></div>
+      <button id="menuToggle" class="menu-toggle">☰</button>
+      <nav id="mainNav" class="main-nav">
+        <a href="#overview">Overview</a>
+        <a href="#auth">Auth</a>
+        <a href="#application">Apply</a>
+        <a href="#approval">Approval</a>
+        <a href="#reporting">Reports</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section id="overview">
+      <h2>Leave Management System</h2>
+      <p>Apply for leave, track balance, manage approvals securely.</p>
+    </section>
+
+    <section id="auth">
+      <h2>Authentication</h2>
+      <div class="card">
+        <h3>Register</h3>
+        <form id="registerForm" onsubmit="apiRegister(event)">
+          <input type="text" name="name" placeholder="Full name" required>
+          <input type="text" name="username" placeholder="Username" required>
+          <input type="email" name="email" placeholder="Email" required>
+          <input type="text" name="department" placeholder="Department" required>
+          <select name="role" required><option>Employee</option><option>Manager</option></select>
+          <input type="password" name="password" placeholder="Password" required>
+          <button type="submit">Register</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h3>Login</h3>
+        <form id="loginForm" onsubmit="apiLogin(event)">
+          <input type="text" name="username" placeholder="Username" required>
+          <input type="password" name="password" placeholder="Password" required>
+          <button type="submit">Login</button>
+        </form>
+      </div>
+    </section>
+
+    <section id="application">
+      <h2>Apply for Leave</h2>
+      <div class="card">
+        <form id="leaveForm" onsubmit="apiSubmitLeave(event)">
+          <input type="date" id="startDate" name="start_date" required>
+          <input type="date" id="endDate" name="end_date" required>
+          <label>Start time: <input type="time" id="startTime" name="start_time"></label>
+          <label>End time: <input type="time" id="endTime" name="end_time"></label>
+          <select name="type" required><option>Annual</option><option>Medical</option><option>Casual</option><option>Unpaid</option></select>
+          <select name="time_frame" id="timeFrame">
+            <option value="Full Day">Full Day</option>
+            <option value="AM">AM Half (default 08:45 - 13:20)</option>
+            <option value="PM">PM Half (default 13:30 - 18:00)</option>
+            <option value="Hourly">Hourly</option>
+          </select>
+          <textarea name="reason" placeholder="Reason (optional)" rows="2"></textarea>
+          <input type="file" name="attachment">
+          <button type="submit">Submit</button>
+        </form>
+      </div>
+    </section>
+
+    <section id="approval">
+      <h2>Leaves</h2>
+      <div id="pendingControls" style="display:none;margin-top:0.5rem">
+        <button id="togglePending" class="btn-secondary" onclick="togglePendingView()">Show Pending Only</button>
+      </div>
+      <div class="card">
+        <table>
+          <thead><tr><th>Name</th><th>Type</th><th>Dates</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="onLeaveRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="reporting">
+      <h2>Export</h2>
+      <div class="card">
+        <label>Year: <input type="number" id="exportYear" value="2025"></label>
+        <button onclick="apiExportRaw()">Raw Data</button>
+        <button onclick="apiExportSummary()">Summary</button>
+      </div>
+    </section>
+  </main>
+
+  <footer><p>&copy; 2025 Leave Management</p></footer>
+  <script src="script.js"></script>
+</body>
+</html>
