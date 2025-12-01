@@ -1,9 +1,9 @@
 {
-  "name": "lmssa",
+  "name": "lms-sa",
   "compatibility_date": "2025-12-01",
   "main": "worker.js",
   "assets": {
-    "directory": "."
+    "directory": "./public"
   },
   "d1_databases": [
     {
