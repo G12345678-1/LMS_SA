@@ -172,7 +172,13 @@ async function approveLeave(id, action){
     const r = await fetch(`${API_BASE}/leaves/${id}/approve`, {method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+t}, body: JSON.stringify({action, remarks})});
     const j = await r.json();
     if(!r.ok) return alert('Action failed: ' + (j.error || j.message || 'Unknown error'));
-    alert('Action recorded');
+    const er = document.getElementById('emailResult');
+    if(er){
+      er.style.display = 'block';
+      er.innerHTML = `<div><strong>${j.emailSent ? 'Email sent' : 'Email not sent'}</strong>${j.emailStatus ? ' (status '+j.emailStatus+')' : ''}</div>${j.emailResponse ? `<pre>${j.emailResponse}</pre>` : ''}`;
+    } else {
+      alert('Action recorded' + (j.emailSent ? ' and email sent' : ' (email not sent)'));
+    }
     loadLeaves();
   }catch(e){ alert('Error: '+ e.message); }
 }

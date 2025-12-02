@@ -157,15 +157,16 @@ export default {
         if (action === 'Approved') {
           await env.DB.prepare('UPDATE users SET used = COALESCE(used,0) + ? WHERE id = ?').bind(leaf.duration_days || 0, leaf.user_id).run();
         }
+        let emailMeta = null;
         try {
           const emp = await env.DB.prepare('SELECT name,email FROM users WHERE id = ?').bind(leaf.user_id).first();
           const mgr = await env.DB.prepare('SELECT name FROM users WHERE id = ?').bind(user.id).first();
           const to = env.NOTIFY_EMAIL || 'leea19385362@gmail.com';
           const title = `Leave ${action}: ${emp?.name || 'Employee'}`;
           const details = `Type: ${leaf.type}\nDates: ${leaf.start_date} ${leaf.start_time || ''} - ${leaf.end_date} ${leaf.end_time || ''}\nDuration: ${leaf.duration_days || 0} day(s) / ${leaf.duration_hours || 0} hour(s)\nStatus: ${action}\nActioned At: ${actionedAt}`;
-          await sendEmailEmailJS(env, to, title, (mgr?.name || user.username || 'Manager'), details);
+          emailMeta = await sendEmailEmailJS(env, to, title, (mgr?.name || user.username || 'Manager'), details);
         } catch (_) {}
-        return json({ message: 'Action recorded' });
+        return json({ message: 'Action recorded', emailSent: !!(emailMeta && emailMeta.ok), emailStatus: emailMeta ? emailMeta.status : undefined, emailResponse: emailMeta ? emailMeta.body : undefined });
       }
 
       if (route('GET', '/api/export/raw')) {
@@ -239,6 +240,7 @@ async function requireAuth(req, env){
   return { ok: true, user };
 }
 async function sendEmailEmailJS(env, to, title, name, message){
+  const origin = env.EMAILJS_ORIGIN || 'http://localhost:8787';
   const body = {
     service_id: env.EMAILJS_SERVICE_ID || 'service_ksydl6u',
     template_id: env.EMAILJS_TEMPLATE_ID || 'template_ypwl5hp',
@@ -246,10 +248,11 @@ async function sendEmailEmailJS(env, to, title, name, message){
     template_params: { to_email: to, title, name, message }
   };
   try {
-    const r = await fetch('https://api.emailjs.com/api/v1.0/email/send', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
-    return r.ok;
-  } catch (_) {
-    return false;
+    const r = await fetch('https://api.emailjs.com/api/v1.0/email/send', { method: 'POST', headers: { 'content-type': 'application/json', 'origin': origin }, body: JSON.stringify(body) });
+    const txt = await r.text();
+    return { ok: r.ok, status: r.status, body: txt };
+  } catch (e) {
+    return { ok: false, status: 0, body: String(e && e.message || 'error') };
   }
 }
 async function sendEmail(to, from, subject, text){
