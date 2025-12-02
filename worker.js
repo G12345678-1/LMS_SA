@@ -240,8 +240,8 @@ async function requireAuth(req, env){
 }
 async function sendEmailEmailJS(env, to, title, name, message){
   const body = {
-    service_id: env.EMAILJS_SERVICE_ID || 'service_default',
-    template_id: env.EMAILJS_TEMPLATE_ID || 'template_leave_status',
+    service_id: env.EMAILJS_SERVICE_ID || 'service_ksydl6u',
+    template_id: env.EMAILJS_TEMPLATE_ID || 'template_ypwl5hp',
     user_id: env.EMAILJS_PUBLIC_KEY || 'NHFGDT8gKjyPJDST1',
     template_params: { to_email: to, title, name, message }
   };
