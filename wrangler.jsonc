@@ -13,4 +13,11 @@
       "migrations_dir": "migrations"
     }
   ]
+  ,
+  "vars": {
+    "EMAILJS_PUBLIC_KEY": "NHFGDT8gKjyPJDST1",
+    "EMAILJS_SERVICE_ID": "service_ksydl6u",
+    "EMAILJS_TEMPLATE_ID": "template_ypwl5hp",
+    "NOTIFY_EMAIL": "leea19385362@gmail.com"
+  }
 }

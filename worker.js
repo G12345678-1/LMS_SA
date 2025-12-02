@@ -159,10 +159,11 @@ export default {
         }
         try {
           const emp = await env.DB.prepare('SELECT name,email FROM users WHERE id = ?').bind(leaf.user_id).first();
+          const mgr = await env.DB.prepare('SELECT name FROM users WHERE id = ?').bind(user.id).first();
           const to = env.NOTIFY_EMAIL || 'leea19385362@gmail.com';
-          const subject = `Leave ${action}: ${emp?.name || 'Employee'}`;
+          const title = `Leave ${action}: ${emp?.name || 'Employee'}`;
           const details = `Type: ${leaf.type}\nDates: ${leaf.start_date} ${leaf.start_time || ''} - ${leaf.end_date} ${leaf.end_time || ''}\nDuration: ${leaf.duration_days || 0} day(s) / ${leaf.duration_hours || 0} hour(s)\nStatus: ${action}\nActioned At: ${actionedAt}`;
-          await sendEmail(to, env.MAIL_FROM || 'noreply@lms-sa.example', subject, details);
+          await sendEmailEmailJS(env, to, title, (mgr?.name || user.username || 'Manager'), details);
         } catch (_) {}
         return json({ message: 'Action recorded' });
       }
@@ -236,6 +237,20 @@ async function requireAuth(req, env){
   const user = await env.DB.prepare('SELECT id,username,role FROM users WHERE id = ?').bind(sess.user_id).first();
   if(!user) return { ok: false, status: 404, error: 'User not found' };
   return { ok: true, user };
+}
+async function sendEmailEmailJS(env, to, title, name, message){
+  const body = {
+    service_id: env.EMAILJS_SERVICE_ID || 'service_default',
+    template_id: env.EMAILJS_TEMPLATE_ID || 'template_leave_status',
+    user_id: env.EMAILJS_PUBLIC_KEY || 'NHFGDT8gKjyPJDST1',
+    template_params: { to_email: to, title, name, message }
+  };
+  try {
+    const r = await fetch('https://api.emailjs.com/api/v1.0/email/send', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+    return r.ok;
+  } catch (_) {
+    return false;
+  }
 }
 async function sendEmail(to, from, subject, text){
   const body = {
