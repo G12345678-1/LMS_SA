@@ -120,7 +120,15 @@ export default {
         const res = await env.DB.prepare(
           'INSERT INTO leaves (user_id,type,start_date,end_date,start_time,end_time,time_frame,reason,attachment,duration_days,duration_hours,applied_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)'
         ).bind(user.id, type, start_date, end_date, start_time || '', end_time || '', time_frame || '', reason || '', attachmentName, durationDays, durationHours, appliedAt).run();
-        return json({ message: 'Leave requested', leaveId: res.meta.last_row_id });
+        let emailMeta = null;
+        try {
+          const emp = await env.DB.prepare('SELECT name,email FROM users WHERE id = ?').bind(user.id).first();
+          const to = env.NOTIFY_EMAIL || 'leea19385362@gmail.com';
+          const title = `Leave Requested: ${emp?.name || user.username || 'Employee'}`;
+          const details = `Type: ${type}\nDates: ${start_date} ${start_time || ''} - ${end_date} ${end_time || ''}\nDuration: ${durationDays} day(s) / ${durationHours} hour(s)\nStatus: Pending\nApplied At: ${appliedAt}`;
+          emailMeta = await sendEmailEmailJS(env, to, title, (emp?.name || user.username || 'Employee'), details);
+        } catch (_) {}
+        return json({ message: 'Leave requested', leaveId: res.meta.last_row_id, emailSent: !!(emailMeta && emailMeta.ok), emailStatus: emailMeta ? emailMeta.status : undefined, emailResponse: emailMeta ? emailMeta.body : undefined });
       }
 
       if (route('GET', '/api/leaves')) {
