@@ -157,6 +157,13 @@ export default {
         if (action === 'Approved') {
           await env.DB.prepare('UPDATE users SET used = COALESCE(used,0) + ? WHERE id = ?').bind(leaf.duration_days || 0, leaf.user_id).run();
         }
+        try {
+          const emp = await env.DB.prepare('SELECT name,email FROM users WHERE id = ?').bind(leaf.user_id).first();
+          const to = env.NOTIFY_EMAIL || 'leea19385362@gmail.com';
+          const subject = `Leave ${action}: ${emp?.name || 'Employee'}`;
+          const details = `Type: ${leaf.type}\nDates: ${leaf.start_date} ${leaf.start_time || ''} - ${leaf.end_date} ${leaf.end_time || ''}\nDuration: ${leaf.duration_days || 0} day(s) / ${leaf.duration_hours || 0} hour(s)\nStatus: ${action}\nActioned At: ${actionedAt}`;
+          await sendEmail(to, env.MAIL_FROM || 'noreply@lms-sa.example', subject, details);
+        } catch (_) {}
         return json({ message: 'Action recorded' });
       }
 
@@ -229,6 +236,20 @@ async function requireAuth(req, env){
   const user = await env.DB.prepare('SELECT id,username,role FROM users WHERE id = ?').bind(sess.user_id).first();
   if(!user) return { ok: false, status: 404, error: 'User not found' };
   return { ok: true, user };
+}
+async function sendEmail(to, from, subject, text){
+  const body = {
+    personalizations: [{ to: [{ email: to }] }],
+    from: { email: from },
+    subject,
+    content: [{ type: 'text/plain', value: text }]
+  };
+  try {
+    const r = await fetch('https://api.mailchannels.net/tx/v1/send', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+    return r.ok;
+  } catch (_) {
+    return false;
+  }
 }
 async function sha256(s) {
   const enc = new TextEncoder();
