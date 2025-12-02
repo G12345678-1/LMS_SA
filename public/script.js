@@ -70,7 +70,13 @@ async function apiSubmitLeave(e) {
     const r = await fetch(`${API_BASE}/leaves`, {method:'POST', headers:{'Authorization':'Bearer '+t}, body: new FormData(e.target)});
     const j = await r.json();
     if(!r.ok) { alert('Failed: ' + (j.error || 'Unknown error')); return; }
-    alert('Leave submitted');
+    const er = document.getElementById('emailResult');
+    if(er){
+      er.style.display = 'block';
+      er.innerHTML = `<div><strong>${j.emailSent ? 'Email sent' : 'Email not sent'}</strong>${j.emailStatus ? ' (status '+j.emailStatus+')' : ''}</div>${j.emailResponse ? `<pre>${j.emailResponse}</pre>` : ''}`;
+    } else {
+      alert('Leave submitted' + (j.emailSent ? ' and email sent' : ' (email not sent)'));
+    }
     loadLeaves();
   } catch(e) { alert('Error: ' + (e.name === 'AbortError' ? 'Request timeout' : e.message)); }
 }
