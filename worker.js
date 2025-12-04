@@ -1,12 +1,3 @@
-let response = await fetch(url, request);
-response = new Response(response.body, response);
-response.headers.delete("X-Frame-Options");
-response.headers.delete("Content-Security-Policy");
-response.headers.set("Content-Security-Policy", "frame-ancestors *");
-
-return response;
-
-
 export default {
   async fetch(req, env) {
     const url = new URL(req.url);
